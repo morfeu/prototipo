@@ -1,0 +1,207 @@
+<?php 
+session_start();
+//include_once '/../../classes/Upi.php';
+//include_once '/../../classes/Post.php';
+//echo $_SERVER["DOCUMENT_ROOT"] . "morfeuteste/classes/Upi.php";
+include_once($_SERVER["DOCUMENT_ROOT"] . "/morfeuteste/classes/Upi.php");
+include_once($_SERVER["DOCUMENT_ROOT"] . "/morfeuteste/classes/Post.php");
+
+/*===========================
+acoes:
+ - novopost
+ - novaupi
+ - novaversaoupi
+ - editarpost 
+*///===========================
+
+$Upi = new UPI();
+$Post = new Post();
+  
+if( ( isset($_GET['acao'])) and (!is_null($_GET['acao'])) and (!empty($_GET['acao'])) )
+{
+	 switch($_GET['acao']) {
+	 	case 'novopost':
+		 	//NOVO POST
+		 	$msg_editor = "Escreva sua Postagem no editor abaixo.";
+		 	
+		 	$_SESSION['editorupi']['acao'] = "novopost" ;
+		 	$_SESSION['editorupi']['idpost'] = $_GET['idpost']	;
+		 	$_SESSION['editorupi']['idpostpai'] =   $_GET['idpostpai']  ;
+		 	$_SESSION['editorupi']['idcontainer'] =  $_GET['idcontainer']   ;
+		 	$_SESSION['editorupi']['idetapa'] =   $_GET['idetapa']  ;
+		 	$_SESSION['editorupi']['idusuario'] =  $_GET['idusuario']   ;
+	
+	 		break;
+	 	case 'editarpost':
+	 		$msg_editor = "Edite sua Postagem no editor abaixo.";
+		    $_SESSION['editorupi']['acao'] = "editarpost" ;
+		    $_SESSION['editorupi']['idpost'] = $_GET['idpost']  ;
+		    $_SESSION['editorupi']['idpostpai'] =   $_GET['idpostpai']  ;
+		    $_SESSION['editorupi']['idcontainer'] =  $_GET['idcontainer']   ;
+		    $_SESSION['editorupi']['idetapa'] =   $_GET['idetapa']  ;
+		    $_SESSION['editorupi']['idusuario'] =  $_GET['idusuario']   ;
+		    $_SESSION['editorupi']['idupi'] =  $_GET['idupi']   ; 
+
+		    $post = $Post->recuperarPorId($_SESSION['editorupi']['idpost']);
+            $conteudoEditor = $post[0]['upi']['texto'];
+	 		break;
+        case 'novaversaoupi':
+            $msg_editor = "Edite sua Produção no editor abaixo.";
+            $_SESSION['editorupi']['acao'] = "novaversaoupi" ;
+            $_SESSION['editorupi']['idusuario'] =  $_GET['idusuario']   ;
+            $_SESSION['editorupi']['idupi'] =  $_GET['idupi']   ;   
+
+		    $upi = $Upi->recuperarPorId( $_SESSION['editorupi']['idupi'] );
+		    $conteudoEditor = $upi['texto'];
+            break;
+        case 'novaupi':
+            $msg_editor = "Crie sua Produção no editor abaixo.";
+            $_SESSION['editorupi']['acao'] = "novaupi" ;
+            $_SESSION['editorupi']['idpost'] = $_GET['idpost']  ;
+            $_SESSION['editorupi']['idusuario'] =  $_GET['idusuario']   ;
+            $_SESSION['editorupi']['idupi'] =  $_GET['idupi']   ;            
+            break;            	 		
+	 	default:
+	        die("Erro E04: Procedimento Inválido!!");
+	 		break;
+	 }
+}
+	 
+	 
+ if( ( isset($_POST['editor1'])) and (!is_null($_POST['editor1'])) and (!empty($_POST['editor1'])) )
+ {
+	 switch($_SESSION['editorupi']['acao'] ) {
+
+	 	case 'novopost':
+		 	$idupi = $Upi->salvar($_SESSION['editorupi']['idusuario'], $_POST['editor1']); //sem versionamento
+		 	if($idupi != false){
+		 		$idpost	= $Post->salvar($idupi, $_SESSION['editorupi']['idetapa'] , $_SESSION['editorupi']['idpostpai'], $_SESSION['editorupi']['idcontainer']);
+		 		if($idpost != false){
+		      		$msg_editor = "Postagem efetuada!!!";
+		 		}
+		 	}
+		    break;
+	    
+	   case 'editarpost':
+	 	
+            $idupi = $Upi->salvarVersao($_SESSION['editorupi']['idusuario'], $_POST['editor1'],$_SESSION['editorupi']['idupi']); //com versionamento
+             
+            if($idupi != false){
+                $idpost = $Post->atualizar($_SESSION['editorupi']['idpost'], $idupi);
+                if($idpost != false){
+                    $msg_editor = "Postagem efetuada!!!";
+                    $_SESSION['editorupi']['idupi'] = $idupi;
+                                       
+                }
+            }
+            break;  
+        case 'novaversaoupi':
+        
+            $idupi = $Upi->salvarVersao($_SESSION['editorupi']['idusuario'], $_POST['editor1'],$_SESSION['editorupi']['idupi']); //com versionamento
+             
+            if($idupi != false){
+                $msg_editor = "Produção efetuada!!!";
+                $_SESSION['editorupi']['idupi'] = $idupi;
+            }
+	   	
+		break;
+        case 'novaupi':
+        
+            $idupi = $Upi->salvar($_SESSION['editorupi']['idusuario'], $_POST['editor1']); //sem versionamento
+            if($idupi != false){
+                $msg_editor = "Produção efetuada!!!";
+                $_SESSION['editorupi']['idupi'] = $idupi;
+            }
+        
+        break;  
+    default:
+        die("Erro E05: Procedimento Inválido!!");
+    break;
+	}
+ }
+
+
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Editor de UPI</title>
+	<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+	<script type="text/javascript" src="ckeditor/ckeditor.js"></script>
+	<script src="css/sample.js" type="text/javascript"></script>
+	<link href="css/sample.css" rel="stylesheet" type="text/css" />
+</head>
+<body onunload="opener.location.reload();">
+	<h1 class="samples">
+		Editor de UPI
+	</h1>
+	<div class="description">
+	<p>
+		<?php echo $msg_editor; ?>
+	</p>
+	<p>
+		O Editor de UPI é uma ferramenta do morfeu para ajudar-vos a publicar e organizar suas produções autorias. 
+	</p>
+
+
+	</div>
+
+	<!-- This <div> holds alert messages to be display in the sample page. -->
+	<div id="alerts">
+		<noscript>
+			<p>
+				<strong>CKEditor requires JavaScript to run</strong>. In a browser with no JavaScript
+				support, like yours, you should still see the contents (HTML data) and you should
+				be able to edit it normally, without a rich editor interface.
+			</p>
+		</noscript>
+	</div>
+	<form action="index.php" method="post">
+			<label for="editor1">	Editor:</label>
+			<textarea cols="70" id="editor1" name="editor1" rows="10"><?=$conteudoEditor; ?></textarea>
+			<script type="text/javascript">
+			//<![CDATA[
+
+				CKEDITOR.replace( 'editor1',
+					{
+						 on :
+					        {
+					            instanceReady : function( ev )
+					            {
+					                // Output paragraphs as <p>Text</p>.
+					                this.dataProcessor.writer.setRules( 'p',
+					                    {
+					                        indent : false,
+					                        breakBeforeOpen : false,
+					                        breakAfterOpen : false,
+					                        breakBeforeClose : false,
+					                        breakAfterClose : false
+					                    });
+					            }
+					        }
+
+					});
+
+			//]]>
+			</script>
+		<p>
+			<input type="submit" value="Salvar" />
+		</p>
+	</form>
+	<div id="footer">
+		<hr />
+		<p>
+			Editor de UPI 0.1 - O Editor de produções do MOrFEu - <a class="samples" href="http://lied.inf.ufes.br/morfeu/">http://lied.inf.ufes.br/morfeu</a>
+		</p>
+		<p id="copy">
+			Copyright &copy; 2011, <a class="samples" href="http://lied.inf.ufes.br/">LIED</a> - UFES.
+			 
+		</p>
+	</div>
+</body>
+</html>

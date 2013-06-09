@@ -1,0 +1,62 @@
+
+#icone > div > div {
+    float: left;
+    margin: 0px 0 0 10px;
+    width: 157px;
+    
+}
+#icone > div > div .img {
+    float: left;
+    height: 60px;
+    margin-bottom: 1px;
+    width: 100%;
+}
+
+#icone > div > div > div {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #CCBB8A;
+    float: left;
+    height: 150px;
+    position: relative;
+    width: 155px;
+}
+#icone > div > div > div h2 a {
+    color: #CC0000;
+    float: left;
+    font: italic bold 16px/18px Myriad,Arial,sans-serif;
+    margin: 0px 0 0 10px;
+    text-decoration: none;
+    width: 140px;
+}
+#icone > div > div > div p a {
+    color: #333333;
+    float: left;
+    font: 11px/14px Arial,sans-serif;
+    margin: 5px 10px;
+    text-decoration: none;
+    width: 135px;
+}
+
+#icone > div > div > div div {
+    bottom: 32px;
+    float: left;
+    left: 0;
+    margin-left: 7px;
+    position: absolute;
+}
+#icone > div > div > div div a {
+    float: left;
+    margin-right: 2px;
+}
+#icone > div > div > div a.love {
+    background: url("images/icones/love.png") no-repeat scroll left top transparent;
+    bottom: 0;
+    color: #3E6004;
+    float: left;
+    font: italic 11px/12px Myriad,Arial,sans-serif;
+    left: 0;
+    margin: 3px 0 6px 7px;
+    padding: 4px 0 2px 24px;
+    position: absolute;
+    text-decoration: none;
+}

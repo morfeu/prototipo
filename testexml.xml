@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vcom id="13">
+  <secao  id="24">
+    <container id="01">
+      <argumentacao id="25">
+        <autor>Homem da terra</autor>
+        <upi>ramon o bom</upi>
+      </argumentacao>
+      <pos>
+        <autor>Homem da terra2</autor>
+        <upi>ramon o bom2</upi>
+      </pos>
+    </container>
+  </secao>
+</vcom> 
